@@ -11,6 +11,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late Position _currentPosition;
+  bool _locationReceived = false;
 
   @override
   void initState() {
@@ -28,7 +29,7 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            if (_currentPosition != null)
+            if (_locationReceived)
               Text(
                   "Latitude: ${_currentPosition.latitude}, Longitude: ${_currentPosition.longitude}"),
             TextButton(
@@ -73,6 +74,7 @@ class _HomePageState extends State<HomePage> {
         desiredAccuracy: LocationAccuracy.best);
     setState(() {
       _currentPosition = position;
+      _locationReceived = true;
     });
   }
 }
