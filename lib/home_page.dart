@@ -9,6 +9,13 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>{
   late Position _currentPosition;
+
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentLocation();
+  }
+
   @override
   Widget build(BuildContext context){
     return Scaffold(
@@ -20,28 +27,47 @@ class _HomePageState extends State<HomePage>{
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             if(_currentPosition != null) Text(
-              "LAT: ${_currentPosition.latitude}, LNG: ${_currentPosition.longitude}"
+                "Latitude: ${_currentPosition.latitude}, Longitude: ${_currentPosition.longitude}"
             ),
             TextButton(
-              child: Text('Get Your Location'),
-              onPressed: () {
-                _getCurrentLocation();
-              }
+                child: Text('Get Your Location'),
+                onPressed: () {
+                  _getCurrentLocation();
+                }
             )
           ],
         ),
       ),
     );
   }
-  _getCurrentLocation(){
-    Geolocator
-    .getCurrentPosition(desiredAccuracy: LocationAccuracy.best, forceAndroidLocationManager: true)
-        .then((Position position){
-          setState(() {
-            _currentPosition=position;
-          });
-    }).catchError((e){
-      print(e);
+
+  _getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      print('The location service is disabled in your device.');
+      return;
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        print('Location service for the application is denied.');
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      print('Location permissions are permanently denied.');
+      return;
+    }
+
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+    setState(() {
+      _currentPosition = position;
     });
   }
 }
