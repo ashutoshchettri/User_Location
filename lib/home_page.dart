@@ -24,6 +24,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('User Location'),
+        backgroundColor: Colors.greenAccent,
       ),
       body: Center(
         child: Column(
