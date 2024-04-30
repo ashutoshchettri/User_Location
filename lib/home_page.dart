@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
             if (_locationReceived)
               Text(
                   "Latitude: ${_currentPosition.latitude}, Longitude: ${_currentPosition.longitude}"),
-            TextButton(
+            ElevatedButton(
                 child: Text('Get Your Location'),
                 onPressed: () {
                   _getCurrentLocation();
