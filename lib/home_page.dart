@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -7,7 +9,7 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>{
+class _HomePageState extends State<HomePage> {
   late Position _currentPosition;
 
   @override
@@ -17,7 +19,7 @@ class _HomePageState extends State<HomePage>{
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('User Location'),
@@ -26,15 +28,16 @@ class _HomePageState extends State<HomePage>{
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            if(_currentPosition != null) Text(
-                "Latitude: ${_currentPosition.latitude}, Longitude: ${_currentPosition.longitude}"
-            ),
+            if (_currentPosition != null)
+              Text(
+                  "Latitude: ${_currentPosition.latitude}, Longitude: ${_currentPosition.longitude}"),
             TextButton(
                 child: Text('Get Your Location'),
                 onPressed: () {
                   _getCurrentLocation();
-                }
-            )
+                  log("Latitude=${_currentPosition.latitude}");
+                  log("Longitude=${_currentPosition.longitude}");
+                })
           ],
         ),
       ),
@@ -47,7 +50,7 @@ class _HomePageState extends State<HomePage>{
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      print('The location service is disabled in your device.');
+      print('Location services are disabled.');
       return;
     }
 
@@ -55,19 +58,22 @@ class _HomePageState extends State<HomePage>{
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        print('Location service for the application is denied.');
+        print('Location permissions are denied.');
         return;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      print('Location permissions are permanently denied.');
+      print(
+          'Location permissions are permanently denied.');
       return;
     }
 
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best);
     setState(() {
       _currentPosition = position;
     });
   }
 }
+
